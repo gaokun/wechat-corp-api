@@ -10,13 +10,17 @@ const Messager = require('./module/messager');
  * @return
  */
 class Client {
-  constructor(corpId, appSecret) {
+  constructor(corpId, appSecret, agentId) {
     this.corpId = corpId;
     this.appSecret = appSecret;
+    this.agentId = agentId;
+
+    this._keepAliveTimer = 0;
+
     this.life = 0; // token多久失效
     this.accessToken = '';
-    // 用于保持access_token
-    this._keepAliveTimer = 0;
+
+    this.initModules();
     this.connect();
   }
 
@@ -41,19 +45,25 @@ class Client {
     });
   }
 
+  // 自动续期 access_token
   keepAlive() {
     clearTimeout(this._keepAliveTimer);
     this._keepAliveTimer = setTimeout(() => {
       this.connect();
-    }, this.life * 1000 / 2);
+    }, this.life * 1000 * 0.9);
   }
 
+  // client不用了后, 需要调用此方法
   close() {
     clearTimeout(this._keepAliveTimer);
   }
 
+  initModules() {
+    this.messager = new Messager(this.accessToken, this.agentId);
+  }
+
   dispatchToken() {
-    this.messager = new Messager(this.accessToken);
+    this.messager.token = this.accessToken;
   }
 }
 

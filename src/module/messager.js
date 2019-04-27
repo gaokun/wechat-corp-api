@@ -1,23 +1,33 @@
 const net = require('../../util/net');
 
 class Messager {
-  constructor(token) {
+  constructor(token, agentId) {
     this.token = token;
+    this.agentId = agentId;
   }
 
-  sendText(text) {
-    const data = {
-      "touser": "GaoKun",
-      // "toparty": " PartyID1 | PartyID2 ",
-      // "totag": " TagID1 | TagID2 ",
-      "msgtype": "text",
-      "agentid": 1000002,
-      "text": {
-        "content": text
-      },
-      "safe": 0
-    };
+  send(data) {
+    data.agentid = this.agentId;
     return net.post(`/message/send?access_token=${this.token}`, data);
+  }
+
+  sendText(text, touser = "@all") {
+    const data = {
+      touser,
+      msgtype: "text",
+      text: {content: text},
+      safe: 0
+    };
+    return this.send(data);
+  }
+
+  sendMd(content, touser = "@all") {
+    const data = {
+      touser,
+      msgtype: "markdown",
+      markdown: {content}
+    };
+    return this.send(data);
   }
 }
 
