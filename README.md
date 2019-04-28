@@ -17,6 +17,6 @@ const client = new Client(CORP_ID, CORP_SECRET, AGENT_ID);
 // 因为这是示例, 所以需要promise, 正常项目不需要
 client.initPromise.then(() => {
     client.messager.sendText('Hi Ken');
-);
+});
 
 ```
