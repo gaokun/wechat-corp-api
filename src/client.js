@@ -1,5 +1,6 @@
 const net = require('../util/net');
 const Messager = require('./module/messager');
+const Contact = require('./module/contact');
 
 /**
  * @Author Ken
@@ -50,7 +51,7 @@ class Client {
     clearTimeout(this._keepAliveTimer);
     this._keepAliveTimer = setTimeout(() => {
       this.connect();
-    }, this.life * 1000 * 0.9);
+    }, this.life * 1000 * 0.3); // 保证一个周期可以重试3次
   }
 
   // client不用了后, 需要调用此方法
@@ -60,10 +61,12 @@ class Client {
 
   initModules() {
     this.messager = new Messager(this.accessToken, this.agentId);
+    this.contact = new Contact(this.accessToken);
   }
 
   dispatchToken() {
     this.messager.token = this.accessToken;
+    this.contact.token = this.accessToken;
   }
 }
 
